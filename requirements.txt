@@ -1,0 +1,6 @@
+ell
+replicate
+smtplib
+requests
+colorama
+python-dotenv
