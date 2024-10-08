@@ -2,6 +2,8 @@
 
 This Python script generates a unique daily image based on a holiday theme and sends it via email. It uses AI-powered image generation and integrates with various services to create a personalized experience.
 
+![Prediction webp from xlabs-ai (1) 2](https://github.com/user-attachments/assets/59f50a5f-6b06-4ed9-b125-a10056dc4b0c)
+
 ## Features
 
 - Generates a daily holiday prompt using AI
