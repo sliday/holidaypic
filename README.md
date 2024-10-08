@@ -41,7 +41,7 @@ CONTROL_IMAGE=https://example.com/path/to/control/image.jpg
 Run the script using Python:
 
 ```bash
-python holidaypic.py
+python3 holidaypic.py
 ```
 
 If any required environment variables are missing, the script will prompt you to enter them interactively.
