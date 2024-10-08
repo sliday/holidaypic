@@ -1,6 +1,5 @@
-ell
+ell-ai
 replicate
-smtplib
 requests
 colorama
 python-dotenv

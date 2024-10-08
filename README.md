@@ -21,19 +21,37 @@ This Python script generates a unique daily image based on a holiday theme and s
 ## Installation
 
 1. Clone this repository or download the `holidaypic.py` script.
-2. Install the required Python packages:
+2. Create a new virtual environment using built-in `venv` module:
 
 ```bash
-pip install python-dotenv replicate colorama requests
+python3 -m venv .venv
 ```
 
-3. Create a `.env.local` file in the same directory as the script with the following variables:
+3. Activate the virtual environment:
 
+```bash
+source .venv/bin/activate
 ```
+
+4. Install the required Python packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+5. Create a `.env.local` file in the same directory as the script with the following variables:
+
+```bash
 SENDER_EMAIL=your_gmail@gmail.com
-SENDER_PASSWORD=your_gmail_one_time_app_password #google one-time app password for Gmail
+SENDER_PASSWORD=your_gmail_password
 RECEIVER_EMAIL=recipient@example.com
 CONTROL_IMAGE=https://example.com/path/to/control/image.jpg
+```
+
+6. (Optional) To deactivate the virtual environment, run:
+
+```bash
+deactivate
 ```
 
 ## Usage
@@ -62,7 +80,8 @@ If any required environment variables are missing, the script will prompt you to
 
 ## Note
 
-Make sure to keep your `.env.local` file secure and never commit it to version control systems.
+> [!WARNING]  
+> Make sure to keep your `.env.local` file secure and never commit it to version control systems.
 
 ## Setting Up Daily Execution
 
@@ -78,7 +97,7 @@ Make sure to keep your `.env.local` file secure and never commit it to version c
 
 2. Make it executable:
 
-   ```
+   ```bash
    chmod +x run_holidaypic.sh
    ```
 
@@ -101,12 +120,14 @@ The script will now run automatically every day at 9 AM, generating an image and
 ### Usage Options
 
 - To generate an image and email it (default behavior):
-  ```
+
+  ```bash
   python3 holidaypic.py
   ```
 
 - To generate an image without emailing:
-  ```
+
+  ```bash
   python3 holidaypic.py --no-email
   ```
 
