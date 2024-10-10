@@ -14,6 +14,7 @@ import re
 from datetime import date
 import argparse
 import sys
+import base64
 
 # Initialize colorama
 init()
@@ -62,6 +63,12 @@ def generate_holiday_prompt():
         No \`\`\`json\`\`\` code block, no comments, no intro, only the JSON.
     """
 
+@ell.simple(model="gpt-4o-mini-2024-07-18", max_tokens=128)
+def generate_foreground_object():
+    return f"""
+        Based on the holiday "{holiday_title}", suggest a single object or emoji that would best represent this holiday as a large, bold foreground element in an image. Output only the object or emoji name, nothing else.
+    """
+
 print(Fore.YELLOW + "🎨 Generating holiday prompt..." + Style.RESET_ALL)
 holiday_json = generate_holiday_prompt()
 holiday_data = json.loads(holiday_json)
@@ -69,17 +76,43 @@ holiday_title = holiday_data['title']
 holiday_emoji = holiday_data['emoji']
 holiday_description = holiday_data['description']
 holiday_prompt = holiday_data['prompt']
-full_prompt = "Large bold Letter \"S\" at the foreground. High contrast. " + holiday_prompt
+
+print(Fore.YELLOW + "🖼️ Generating foreground object..." + Style.RESET_ALL)
+holiday_object = generate_foreground_object()
+full_prompt = f"Large bold {holiday_object} at the foreground. High contrast. " + holiday_prompt
+
 print(Fore.GREEN + f"🎉 Generated holiday: {holiday_emoji} {holiday_title}" + Style.RESET_ALL)
 print(Fore.GREEN + f"📅 Description: {holiday_description}" + Style.RESET_ALL)
+print(Fore.GREEN + f"🖼️ Foreground object: {holiday_object}" + Style.RESET_ALL)
 print(Fore.GREEN + f"📝 Generated prompt: {full_prompt}" + Style.RESET_ALL)
 
 # Step 2: Generate image using Replicate
 print(Fore.YELLOW + "🖼️ Generating image using Replicate..." + Style.RESET_ALL)
 
-# Update the control_image assignment
-control_image = args.control_image or os.environ.get('CONTROL_IMAGE', 'https://replicate.delivery/pbxt/Ll54VZSXgicY76IolH5uDcTgUHKO8Aj3nyNhApW0EyeBEyEj/Sliday%20Logo2.jpg')
+# Generate depth map
+depth_output = replicate.run(
+    "chenxwh/depth-anything-v2:b239ea33cff32bb7abb5db39ffe9a09c14cbc2894331d1ef66fe096eed88ebd4",
+    input={
+        "image": args.control_image or os.environ.get('CONTROL_IMAGE', 'https://replicate.delivery/pbxt/Ll54VZSXgicY76IolH5uDcTgUHKO8Aj3nyNhApW0EyeBEyEj/Sliday%20Logo2.jpg'),
+        "model_size": "Large"
+    }
+)
 
+# Extract the grey depth map URL
+grey_depth_url = depth_output['grey_depth']
+
+# Download the grey depth map
+response = requests.get(grey_depth_url)
+if response.status_code != 200:
+    print(Fore.RED + f"Failed to download depth map. Status code: {response.status_code}" + Style.RESET_ALL)
+    sys.exit(1)
+
+depth_map_data = response.content
+
+# Encode the image data as base64
+depth_map_base64 = base64.b64encode(depth_map_data).decode('utf-8')
+
+# Use the base64-encoded depth map as control_image
 output = replicate.run(
     "xlabs-ai/flux-dev-controlnet:f2c31c31d81278a91b2447a304dae654c64a5d5a70340fba811bb1cbd41019a2",
     input={
@@ -87,7 +120,7 @@ output = replicate.run(
         "prompt": full_prompt,
         "lora_url": "",
         "control_type": "depth",
-        "control_image": control_image,
+        "control_image": f"data:image/png;base64,{depth_map_base64}",
         "lora_strength": 1,
         "output_format": "jpg",
         "guidance_scale": 3.52,
