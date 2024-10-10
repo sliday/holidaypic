@@ -23,9 +23,10 @@ print(Fore.CYAN + "🚀 Starting the process..." + Style.RESET_ALL)
 # Load environment variables
 load_dotenv('.env.local')
 
-# Add this near the top of your script, after the imports
+# Modify the ArgumentParser section
 parser = argparse.ArgumentParser(description="Generate and optionally email a daily user picture.")
 parser.add_argument("--no-email", action="store_true", help="Skip sending email")
+parser.add_argument("--control-image", type=str, help="Path or URL to custom control image")
 args = parser.parse_args()
 
 # Step 1: Generate prompt using @Ell
@@ -75,7 +76,10 @@ print(Fore.GREEN + f"📝 Generated prompt: {full_prompt}" + Style.RESET_ALL)
 
 # Step 2: Generate image using Replicate
 print(Fore.YELLOW + "🖼️ Generating image using Replicate..." + Style.RESET_ALL)
-control_image = os.environ.get('CONTROL_IMAGE', 'https://replicate.delivery/pbxt/Ll54VZSXgicY76IolH5uDcTgUHKO8Aj3nyNhApW0EyeBEyEj/Sliday%20Logo2.jpg')
+
+# Update the control_image assignment
+control_image = args.control_image or os.environ.get('CONTROL_IMAGE', 'https://replicate.delivery/pbxt/Ll54VZSXgicY76IolH5uDcTgUHKO8Aj3nyNhApW0EyeBEyEj/Sliday%20Logo2.jpg')
+
 output = replicate.run(
     "xlabs-ai/flux-dev-controlnet:f2c31c31d81278a91b2447a304dae654c64a5d5a70340fba811bb1cbd41019a2",
     input={
