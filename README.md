@@ -59,10 +59,47 @@ deactivate
 Run the script using Python:
 
 ```bash
-python3 holidaypic.py
+python3 holidaypic.py [options]
 ```
-
 If any required environment variables are missing, the script will prompt you to enter them interactively.
+
+## Command-line Arguments
+
+The script supports several command-line arguments to customize its behavior:
+
+- `--no-email`: Skip sending the generated image via email.
+- `--control-image PATH`: Specify a custom control image to use instead of the default.
+- `--no-depth-processing`: Skip depth map processing for the control image.
+
+### Examples
+
+1. Generate an image and send it via email (default behavior):
+   ```bash
+   python3 holidaypic.py
+   ```
+
+2. Generate an image without sending an email:
+   ```bash
+   python3 holidaypic.py --no-email
+   ```
+
+3. Use a custom control image:
+   ```bash
+   python3 holidaypic.py --control-image path/to/your/image.jpg
+   ```
+
+4. Use a custom control image that's already a black and white depth map:
+   ```bash
+   python3 holidaypic.py --control-image path/to/depth_map.jpg --no-depth-processing
+   ```
+
+### Argument Details
+
+- `--no-email`: Use this flag when you want to generate the image but don't want to send it via email. This is useful for testing or when you want to manually handle the generated image.
+
+- `--control-image PATH`: This argument allows you to specify a custom image to use as the control for the AI image generation. The control image influences the structure and composition of the generated image. If not provided, the script uses a default control image.
+
+- `--no-depth-processing`: By default, the script processes the control image to create a depth map. Use this flag if your control image is already a black and white depth map and you want to skip this processing step. This can be useful when you have pre-processed images or want more direct control over the depth information used in image generation.
 
 ## How It Works
 
@@ -116,19 +153,3 @@ If any required environment variables are missing, the script will prompt you to
 4. Save and exit the crontab editor.
 
 The script will now run automatically every day at 9 AM, generating an image and emailing it by default.
-
-### Usage Options
-
-- To generate an image and email it (default behavior):
-
-  ```bash
-  python3 holidaypic.py
-  ```
-
-- To generate an image without emailing:
-
-  ```bash
-  python3 holidaypic.py --no-email
-  ```
-
-Note: Ensure your machine is on at the scheduled time.
